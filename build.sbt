@@ -1,16 +1,17 @@
 ThisBuild / tlBaseVersion := "0.23"
-ThisBuild / tlMimaPreviousVersions ++= (0 to 11).map(y => s"0.23.$y").toSet
 ThisBuild / developers := List(
   tlGitHubDev("rossabaker", "Ross A. Baker")
 )
 
+val Scala212 = "2.12.16"
 val Scala213 = "2.13.8"
-ThisBuild / crossScalaVersions := Seq("2.12.16", Scala213, "3.1.2")
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.1.2")
 ThisBuild / scalaVersion := Scala213
 
-lazy val root = project.in(file(".")).aggregate(scalaXml).enablePlugins(NoPublishPlugin)
+lazy val root = project.in(file(".")).aggregate(scalaXml, scalaXml1).enablePlugins(NoPublishPlugin)
 
 val http4sVersion = "0.23.12"
+val scalaXml1Version = "1.3.0"
 val scalaXmlVersion = "2.1.0"
 val munitVersion = "0.7.29"
 val munitCatsEffectVersion = "1.0.7"
@@ -20,10 +21,30 @@ lazy val scalaXml = project
   .settings(
     name := "http4s-scala-xml",
     description := "Provides scala-xml codecs for http4s",
+    tlMimaPreviousVersions ++= (0 to 11).map(y => s"0.23.$y").toSet,
     startYear := Some(2014),
     libraryDependencies ++= Seq(
       "org.http4s" %%% "http4s-core" % http4sVersion,
       "org.scala-lang.modules" %%% "scala-xml" % scalaXmlVersion,
+      "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
+      "org.typelevel" %%% "munit-cats-effect-3" % munitCatsEffectVersion % Test,
+      "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
+    ),
+  )
+
+lazy val scalaXml1 = project
+  .in(file("scala-xml-1"))
+  .settings(
+    name := "http4s-scala-xml-1",
+    description := "Provides scala-xml codecs for http4s",
+    tlMimaPreviousVersions ++= Set("0.23.0"),
+    startYear := Some(2014),
+    crossScalaVersions := Seq(Scala212, Scala213),
+    Compile / unmanagedSourceDirectories ++= (scalaXml / Compile / unmanagedSourceDirectories).value,
+    Test / unmanagedSourceDirectories ++= (scalaXml / Test / unmanagedSourceDirectories).value,
+    libraryDependencies ++= Seq(
+      "org.http4s" %%% "http4s-core" % http4sVersion,
+      "org.scala-lang.modules" %%% "scala-xml" % scalaXml1Version,
       "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % munitCatsEffectVersion % Test,
       "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
