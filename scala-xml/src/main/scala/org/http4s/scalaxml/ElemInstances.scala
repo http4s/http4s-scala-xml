@@ -21,6 +21,7 @@ import cats.data.EitherT
 import cats.effect.Async
 import cats.effect.Concurrent
 import cats.syntax.all._
+import fs2.io.toInputStreamResource
 import org.http4s.Charset.`UTF-8`
 import org.http4s.headers.`Content-Type`
 
@@ -78,18 +79,18 @@ trait ElemInstances {
       val source = new InputSource()
       msg.charset.foreach(cs => source.setEncoding(cs.nioCharset.name))
 
-      collectBinary(msg).flatMap[DecodeFailure, Elem] { chunk =>
-        source.setByteStream(new ByteArrayInputStream(chunk.toArray))
-        val saxParser = saxFactory.newSAXParser()
-        EitherT(
-          F.blocking(XML.loadXML(source, saxParser))
-            .map(Either.right[DecodeFailure, Elem](_))
-            .recover { case e: SAXParseException =>
-              Left(MalformedMessageBodyFailure("Invalid XML", Some(e)))
-            }
-        )
-      }
+      EitherT(
+        toInputStreamResource(msg.body)
+          .use { in =>
+            source.setByteStream(in)
+            val saxParser = saxFactory.newSAXParser()
+            F.blocking(XML.loadXML(source, saxParser))
+          }
+          .map(Either.right[DecodeFailure, Elem](_))
+          .recover { case e: SAXParseException =>
+            Left(MalformedMessageBodyFailure("Invalid XML", Some(e)))
+          }
+      )
     }
   }
-
 }
