@@ -1,38 +1,58 @@
 ThisBuild / tlBaseVersion := "0.23"
-ThisBuild / tlMimaPreviousVersions ++= (0 to 11).map(y => s"0.23.$y").toSet
 ThisBuild / developers := List(
   tlGitHubDev("rossabaker", "Ross A. Baker")
 )
+ThisBuild / startYear := Some(2014)
 
+val Scala212 = "2.12.16"
 val Scala213 = "2.13.8"
-ThisBuild / crossScalaVersions := Seq("2.12.16", Scala213, "3.1.2")
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.1.2")
 ThisBuild / scalaVersion := Scala213
+ThisBuild / tlSkipIrrelevantScalas := true
 
-lazy val root = project.in(file(".")).aggregate(scalaXml).enablePlugins(NoPublishPlugin)
+lazy val root = project.in(file(".")).aggregate(scalaXml2, scalaXml1).enablePlugins(NoPublishPlugin)
 
 val http4sVersion = "0.23.12"
-val scalaXmlVersion = "2.1.0"
+val scalaXml1Version = "1.3.0"
+val scalaXml2Version = "2.1.0"
 val munitVersion = "0.7.29"
 val munitCatsEffectVersion = "1.0.7"
 
-lazy val scalaXml = project
-  .in(file("scala-xml"))
+lazy val scalaXml2 = project
+  .in(file("scala-xml-2"))
   .settings(
     name := "http4s-scala-xml",
     description := "Provides scala-xml codecs for http4s",
-    startYear := Some(2014),
-    libraryDependencies ++= Seq(
-      "org.http4s" %%% "http4s-core" % http4sVersion,
-      "org.scala-lang.modules" %%% "scala-xml" % scalaXmlVersion,
-      "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
-      "org.typelevel" %%% "munit-cats-effect-3" % munitCatsEffectVersion % Test,
-      "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
-    ),
+    tlMimaPreviousVersions ++= (0 to 11).map(y => s"0.23.$y").toSet,
+    libraryDependencies += "org.scala-lang.modules" %%% "scala-xml" % scalaXml2Version,
+    commonSettings,
   )
+
+lazy val scalaXml1 = project
+  .in(file("scala-xml-1"))
+  .settings(
+    name := "http4s-scala-xml-1",
+    description := "Provides scala-xml codecs for http4s",
+    tlMimaPreviousVersions ++= Set("0.23.0"),
+    crossScalaVersions := Seq(Scala212, Scala213),
+    libraryDependencies += "org.scala-lang.modules" %%% "scala-xml" % scalaXml1Version,
+    commonSettings,
+  )
+
+lazy val commonSettings = Seq(
+  Compile / unmanagedSourceDirectories += (LocalRootProject / baseDirectory).value / "scala-xml" / "src" / "main" / "scala",
+  Test / unmanagedSourceDirectories += (LocalRootProject / baseDirectory).value / "scala-xml" / "src" / "test" / "scala",
+  libraryDependencies ++= Seq(
+    "org.http4s" %%% "http4s-core" % http4sVersion,
+    "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
+    "org.typelevel" %%% "munit-cats-effect-3" % munitCatsEffectVersion % Test,
+    "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
+  ),
+)
 
 lazy val docs = project
   .in(file("site"))
-  .dependsOn(scalaXml)
+  .dependsOn(scalaXml2)
   .settings(
     libraryDependencies ++= Seq(
       "org.http4s" %%% "http4s-dsl" % http4sVersion,
