@@ -20,7 +20,6 @@ import scala.xml._
 import scala.xml.transform._
 
 trait ScalaXmlSuiteVersion {
-  // https://github.com/http4s/http4s-scala-xml/issues/32
   object stripComments extends RewriteRule {
     override def transform(n: Node): Seq[Node] =
       n match {
@@ -29,5 +28,11 @@ trait ScalaXmlSuiteVersion {
       }
   }
 
-  object normalize extends RuleTransformer(stripComments)
+  object trimProper extends RewriteRule {
+    override def transform(n: Node): Seq[Node] =
+      Utility.trimProper(n)
+  }
+
+  // https://github.com/http4s/http4s-scala-xml/issues/32
+  object normalize extends RuleTransformer(stripComments, trimProper)
 }
