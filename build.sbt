@@ -37,6 +37,7 @@ lazy val scalaXml1 = project
     tlMimaPreviousVersions ++= Set("0.23.0"),
     crossScalaVersions := Seq(Scala212, Scala213),
     libraryDependencies += "org.scala-lang.modules" %%% "scala-xml" % scalaXml1Version,
+    dependencyOverrides += "org.scala-lang.modules" %%% "scala-xml" % scalaXml1Version,
     commonSettings,
   )
 
