@@ -13,6 +13,7 @@ ThisBuild / tlSkipIrrelevantScalas := true
 lazy val root = project.in(file(".")).aggregate(scalaXml2, scalaXml1).enablePlugins(NoPublishPlugin)
 
 val http4sVersion = "0.23.12"
+val scalacheckXmlVersion = "0.1.0"
 val scalaXml1Version = "1.3.0"
 val scalaXml2Version = "2.1.0"
 val munitVersion = "0.7.29"
@@ -36,6 +37,7 @@ lazy val scalaXml1 = project
     tlMimaPreviousVersions ++= Set("0.23.0"),
     crossScalaVersions := Seq(Scala212, Scala213),
     libraryDependencies += "org.scala-lang.modules" %%% "scala-xml" % scalaXml1Version,
+    dependencyOverrides += "org.scala-lang.modules" %%% "scala-xml" % scalaXml1Version,
     commonSettings,
   )
 
@@ -44,9 +46,10 @@ lazy val commonSettings = Seq(
   Test / unmanagedSourceDirectories += (LocalRootProject / baseDirectory).value / "scala-xml" / "src" / "test" / "scala",
   libraryDependencies ++= Seq(
     "org.http4s" %%% "http4s-core" % http4sVersion,
+    "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
     "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
     "org.typelevel" %%% "munit-cats-effect-3" % munitCatsEffectVersion % Test,
-    "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
+    "org.typelevel" %%% "scalacheck-xml" % scalacheckXmlVersion % Test,
   ),
 )
 

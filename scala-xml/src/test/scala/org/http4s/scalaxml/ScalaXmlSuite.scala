@@ -28,10 +28,10 @@ import munit.ScalaCheckEffectSuite
 import org.http4s.Status.Ok
 import org.http4s.headers.`Content-Type`
 import org.http4s.laws.discipline.arbitrary._
-import org.http4s.scalaxml.generators._
 import org.scalacheck.Prop._
 import org.scalacheck.effect.PropF._
 import org.typelevel.ci._
+import org.typelevel.scalacheck.xml.generators._
 
 import java.nio.charset.StandardCharsets
 import scala.xml.Elem
