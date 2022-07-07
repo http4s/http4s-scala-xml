@@ -40,7 +40,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with Scal
   def getBody(body: EntityBody[IO]): IO[String] =
     body.through(utf8.decode).foldMonoid.compile.lastOrError
 
-  def strBody(body: String): EntityBody[IO] = Stream(body).through(utf8.encode)
+  def strEntity(body: String): Entity[IO] = Entity(Stream(body).through(utf8.encode))
 
   def writeToString[A](a: A)(implicit W: EntityEncoder[IO, A]): IO[String] =
     Stream
@@ -69,10 +69,13 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with Scal
   }
 
   test("parse XML in parallel") {
-    val req = Request(body =
-      strBody("""<?xml version="1.0" encoding="UTF-8" standalone="yes"?><html><h1>h1</h1></html>""")
+    val req = Request(entity =
+      strEntity(
+        """<?xml version="1.0" encoding="UTF-8" standalone="yes"?><html><h1>h1</h1></html>"""
+      )
     )
     // https://github.com/http4s/http4s/issues/1209
+
     (0 to 5).toList
       .parTraverse(_ => server(req).flatMap(r => getBody(r.body)))
       .map { bodies =>
@@ -83,8 +86,8 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with Scal
   }
 
   test("return 400 on parse error") {
-    val body = strBody("This is not XML.")
-    val tresp = server(Request[IO](body = body))
+    val entity = strEntity("This is not XML.")
+    val tresp = server(Request[IO](entity = entity))
     tresp.map(_.status).assertEquals(Status.BadRequest)
   }
 
@@ -100,8 +103,8 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with Scal
 
   test("encode to UTF-8") {
     val hello = <hello name="Günther"/>
-    assertIO(
-      xmlEncoder[IO](Charset.`UTF-8`)
+    assertEquals(
+      xmlEncoder(Charset.`UTF-8`)
         .toEntity(hello)
         .body
         .through(fs2.text.utf8.decode)
@@ -115,10 +118,10 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with Scal
   test("encode to UTF-16") {
     val hello = <hello name="Günther"/>
     assertIO(
-      xmlEncoder[IO](Charset.`UTF-16`)
+      xmlEncoder(Charset.`UTF-16`)
         .toEntity(hello)
         .body
-        .through(decodeWithCharset(StandardCharsets.UTF_16))
+        .through(decodeWithCharset[IO](StandardCharsets.UTF_16))
         .compile
         .string,
       """<?xml version='1.0' encoding='UTF-16'?>
@@ -129,10 +132,10 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with Scal
   test("encode to ISO-8859-1") {
     val hello = <hello name="Günther"/>
     assertIO(
-      xmlEncoder[IO](Charset.`ISO-8859-1`)
+      xmlEncoder(Charset.`ISO-8859-1`)
         .toEntity(hello)
         .body
-        .through(decodeWithCharset(StandardCharsets.ISO_8859_1))
+        .through(decodeWithCharset[IO](StandardCharsets.ISO_8859_1))
         .compile
         .string,
       """<?xml version='1.0' encoding='ISO-8859-1'?>
@@ -142,7 +145,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with Scal
 
   property("encoder sets charset of Content-Type") {
     forAll { (cs: Charset) =>
-      assertEquals(xmlEncoder[IO](cs).headers.get[`Content-Type`].flatMap(_.charset), Some(cs))
+      assertEquals(xmlEncoder(cs).headers.get[`Content-Type`].flatMap(_.charset), Some(cs))
     }
   }
 

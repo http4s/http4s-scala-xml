@@ -1,18 +1,17 @@
-ThisBuild / tlBaseVersion := "0.23"
+ThisBuild / tlBaseVersion := "1.0"
 ThisBuild / developers := List(
   tlGitHubDev("rossabaker", "Ross A. Baker")
 )
 ThisBuild / startYear := Some(2014)
 
-val Scala212 = "2.12.16"
 val Scala213 = "2.13.8"
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.1.3")
+ThisBuild / crossScalaVersions := Seq(Scala213, "3.1.2")
 ThisBuild / scalaVersion := Scala213
 ThisBuild / tlSkipIrrelevantScalas := true
 
 lazy val root = project.in(file(".")).aggregate(scalaXml2, scalaXml1).enablePlugins(NoPublishPlugin)
 
-val http4sVersion = "0.23.13"
+val http4sVersion = "1.0.0-M33"
 val scalacheckXmlVersion = "0.1.0"
 val scalaXml1Version = "1.3.0"
 val scalaXml2Version = "2.1.0"
@@ -35,7 +34,7 @@ lazy val scalaXml1 = project
     name := "http4s-scala-xml-1",
     description := "Provides scala-xml codecs for http4s",
     tlMimaPreviousVersions ++= Set("0.23.0"),
-    crossScalaVersions := Seq(Scala212, Scala213),
+    crossScalaVersions := Seq(Scala213),
     libraryDependencies += "org.scala-lang.modules" %%% "scala-xml" % scalaXml1Version,
     dependencyOverrides += "org.scala-lang.modules" %%% "scala-xml" % scalaXml1Version,
     commonSettings,
