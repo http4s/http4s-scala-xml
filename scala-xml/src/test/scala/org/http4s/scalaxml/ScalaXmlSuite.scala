@@ -24,17 +24,19 @@ import fs2.Stream
 import fs2.text.decodeWithCharset
 import fs2.text.utf8
 import munit.CatsEffectSuite
-import munit.ScalaCheckSuite
+import munit.ScalaCheckEffectSuite
 import org.http4s.Status.Ok
 import org.http4s.headers.`Content-Type`
 import org.http4s.laws.discipline.arbitrary._
 import org.scalacheck.Prop._
+import org.scalacheck.effect.PropF._
 import org.typelevel.ci._
+import org.typelevel.scalacheck.xml.generators._
 
 import java.nio.charset.StandardCharsets
 import scala.xml.Elem
 
-class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
+class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with ScalaXmlSuiteVersion {
   def getBody(body: EntityBody[IO]): IO[String] =
     body.through(utf8.decode).foldMonoid.compile.lastOrError
 
@@ -56,10 +58,14 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
     }
   }
 
-  test("xml should parse the XML") {
-    server(Request[IO](entity = strEntity("<html><h1>h1</h1></html>")))
-      .flatMap(r => getBody(r.body))
-      .assertEquals("html")
+  test("round trips utf-8") {
+    forAllF(genXml) { (elem: Elem) =>
+      val normalized = normalize(elem).asInstanceOf[Elem]
+      Request[IO]()
+        .withEntity(normalized)
+        .as[Elem]
+        .assertEquals(normalized)
+    }
   }
 
   test("parse XML in parallel") {
@@ -69,6 +75,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
       )
     )
     // https://github.com/http4s/http4s/issues/1209
+
     (0 to 5).toList
       .parTraverse(_ => server(req).flatMap(r => getBody(r.body)))
       .map { bodies =>
