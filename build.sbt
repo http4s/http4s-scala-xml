@@ -5,7 +5,7 @@ ThisBuild / developers := List(
 ThisBuild / startYear := Some(2014)
 
 val Scala212 = "2.12.16"
-val Scala213 = "2.13.8"
+val Scala213 = "2.13.9"
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.1.3")
 ThisBuild / scalaVersion := Scala213
 ThisBuild / tlSkipIrrelevantScalas := true
