@@ -24,21 +24,23 @@ import fs2.Stream
 import fs2.text.decodeWithCharset
 import fs2.text.utf8
 import munit.CatsEffectSuite
-import munit.ScalaCheckSuite
+import munit.ScalaCheckEffectSuite
 import org.http4s.Status.Ok
 import org.http4s.headers.`Content-Type`
 import org.http4s.laws.discipline.arbitrary._
 import org.scalacheck.Prop._
+import org.scalacheck.effect.PropF._
 import org.typelevel.ci._
+import org.typelevel.scalacheck.xml.generators._
 
 import java.nio.charset.StandardCharsets
 import scala.xml.Elem
 
-class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
+class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with ScalaXmlSuiteVersion {
   def getBody(body: EntityBody[IO]): IO[String] =
     body.through(utf8.decode).foldMonoid.compile.lastOrError
 
-  def strEntity(body: String): Entity[IO] = Entity(Stream(body).through(utf8.encode))
+  def strBody(body: String): EntityBody[IO] = Stream(body).through(utf8.encode)
 
   def writeToString[A](a: A)(implicit W: EntityEncoder[IO, A]): IO[String] =
     Stream
@@ -56,17 +58,19 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
     }
   }
 
-  test("xml should parse the XML") {
-    server(Request[IO](entity = strEntity("<html><h1>h1</h1></html>")))
-      .flatMap(r => getBody(r.body))
-      .assertEquals("html")
+  test("round trips utf-8") {
+    forAllF(genXml) { (elem: Elem) =>
+      val normalized = normalize(elem).asInstanceOf[Elem]
+      Request[IO]()
+        .withEntity(normalized)
+        .as[Elem]
+        .assertEquals(normalized)
+    }
   }
 
   test("parse XML in parallel") {
-    val req = Request(entity =
-      strEntity(
-        """<?xml version="1.0" encoding="UTF-8" standalone="yes"?><html><h1>h1</h1></html>"""
-      )
+    val req = Request[IO]().withEntity(
+      strBody("""<?xml version="1.0" encoding="UTF-8" standalone="yes"?><html><h1>h1</h1></html>""")
     )
     // https://github.com/http4s/http4s/issues/1209
     (0 to 5).toList
@@ -79,8 +83,8 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
   }
 
   test("return 400 on parse error") {
-    val entity = strEntity("This is not XML.")
-    val tresp = server(Request[IO](entity = entity))
+    val body = strBody("This is not XML.")
+    val tresp = server(Request[IO]().withEntity(body))
     tresp.map(_.status).assertEquals(Status.BadRequest)
   }
 
@@ -96,8 +100,8 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
 
   test("encode to UTF-8") {
     val hello = <hello name="Günther"/>
-    assertEquals(
-      xmlEncoder(Charset.`UTF-8`)
+    assertIO(
+      xmlEncoder[IO](Charset.`UTF-8`)
         .toEntity(hello)
         .body
         .through(fs2.text.utf8.decode)
@@ -111,10 +115,10 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
   test("encode to UTF-16") {
     val hello = <hello name="Günther"/>
     assertIO(
-      xmlEncoder(Charset.`UTF-16`)
+      xmlEncoder[IO](Charset.`UTF-16`)
         .toEntity(hello)
         .body
-        .through(decodeWithCharset[IO](StandardCharsets.UTF_16))
+        .through(decodeWithCharset(StandardCharsets.UTF_16))
         .compile
         .string,
       """<?xml version='1.0' encoding='UTF-16'?>
@@ -125,10 +129,10 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
   test("encode to ISO-8859-1") {
     val hello = <hello name="Günther"/>
     assertIO(
-      xmlEncoder(Charset.`ISO-8859-1`)
+      xmlEncoder[IO](Charset.`ISO-8859-1`)
         .toEntity(hello)
         .body
-        .through(decodeWithCharset[IO](StandardCharsets.ISO_8859_1))
+        .through(decodeWithCharset(StandardCharsets.ISO_8859_1))
         .compile
         .string,
       """<?xml version='1.0' encoding='ISO-8859-1'?>
@@ -138,7 +142,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
 
   property("encoder sets charset of Content-Type") {
     forAll { (cs: Charset) =>
-      assertEquals(xmlEncoder(cs).headers.get[`Content-Type`].flatMap(_.charset), Some(cs))
+      assertEquals(xmlEncoder[IO](cs).headers.get[`Content-Type`].flatMap(_.charset), Some(cs))
     }
   }
 
@@ -253,7 +257,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckSuite {
           "iso-2022-kr"
         )
       ),
-      "application/xml; charset=iso-2022kr",
+      "application/xml; charset=iso-2022-kr",
       "문재인",
     )
   }
