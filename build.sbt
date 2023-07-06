@@ -6,7 +6,7 @@ ThisBuild / startYear := Some(2014)
 
 val Scala212 = "2.12.17"
 val Scala213 = "2.13.10"
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.2.1")
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.3.0")
 ThisBuild / scalaVersion := Scala213
 ThisBuild / tlSkipIrrelevantScalas := true
 
@@ -16,7 +16,7 @@ val http4sVersion = "0.23.19"
 val scalacheckXmlVersion = "0.1.0"
 val scalaXml1Version = "1.3.0"
 val scalaXml2Version = "2.1.0"
-val munitVersion = "1.0.0-M7"
+val munitVersion = "1.0.0-M8"
 val munitCatsEffectVersion = "2.0.0-M3"
 
 lazy val scalaXml2 = project
