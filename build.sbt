@@ -12,10 +12,10 @@ ThisBuild / tlSkipIrrelevantScalas := true
 
 lazy val root = project.in(file(".")).aggregate(scalaXml2, scalaXml1).enablePlugins(NoPublishPlugin)
 
-val http4sVersion = "0.23.19"
+val http4sVersion = "0.23.22"
 val scalacheckXmlVersion = "0.1.0"
-val scalaXml1Version = "1.3.0"
-val scalaXml2Version = "2.1.0"
+val scalaXml1Version = "1.3.1"
+val scalaXml2Version = "2.2.0"
 val munitVersion = "1.0.0-M8"
 val munitCatsEffectVersion = "2.0.0-M3"
 
