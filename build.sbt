@@ -4,7 +4,7 @@ ThisBuild / developers := List(
 )
 ThisBuild / startYear := Some(2014)
 
-val Scala213 = "2.13.8"
+val Scala213 = "2.13.12"
 ThisBuild / crossScalaVersions := Seq(Scala213, "3.2.1")
 ThisBuild / scalaVersion := Scala213
 
