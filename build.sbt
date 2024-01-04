@@ -12,7 +12,7 @@ ThisBuild / tlSkipIrrelevantScalas := true
 
 lazy val root = project.in(file(".")).aggregate(scalaXml2, scalaXml1).enablePlugins(NoPublishPlugin)
 
-val http4sVersion = "0.23.22"
+val http4sVersion = "0.23.25"
 val scalacheckXmlVersion = "0.1.0"
 val scalaXml1Version = "1.3.1"
 val scalaXml2Version = "2.2.0"
