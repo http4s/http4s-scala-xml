@@ -17,7 +17,7 @@ val scalacheckXmlVersion = "0.1.0"
 val scalaXml1Version = "1.3.1"
 val scalaXml2Version = "2.2.0"
 val munitVersion = "1.0.0-M11"
-val munitCatsEffectVersion = "2.0.0-M4"
+val munitCatsEffectVersion = "2.0.0-RC1"
 
 lazy val scalaXml2 = project
   .in(file("scala-xml-2"))
