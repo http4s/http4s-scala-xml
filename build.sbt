@@ -4,17 +4,17 @@ ThisBuild / developers := List(
 )
 ThisBuild / startYear := Some(2014)
 
-val Scala213 = "2.13.8"
-ThisBuild / crossScalaVersions := Seq(Scala213, "3.2.1")
+val Scala213 = "2.13.12"
+ThisBuild / crossScalaVersions := Seq(Scala213, "3.3.3")
 ThisBuild / scalaVersion := Scala213
 
 lazy val root = project.in(file(".")).aggregate(scalaXml2).enablePlugins(NoPublishPlugin)
 
 val http4sVersion = "1.0.0-M39"
 val scalacheckXmlVersion = "0.1.0"
-val scalaXmlVersion = "2.1.0"
-val munitVersion = "1.0.0-M11"
-val munitCatsEffectVersion = "2.0.0-M3"
+val scalaXmlVersion = "2.3.0"
+val munitVersion = "1.0.0"
+val munitCatsEffectVersion = "2.0.0-RC1"
 
 lazy val scalaXml2 = project
   .in(file("scala-xml-2"))
