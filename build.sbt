@@ -10,7 +10,7 @@ ThisBuild / scalaVersion := Scala213
 
 lazy val root = project.in(file(".")).aggregate(scalaXml2).enablePlugins(NoPublishPlugin)
 
-val http4sVersion = "1.0.0-M42"
+val http4sVersion = "1.0.0-M43"
 val scalacheckXmlVersion = "0.1.0"
 val scalaXmlVersion = "2.3.0"
 val munitVersion = "1.0.0"
