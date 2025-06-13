@@ -13,7 +13,7 @@ lazy val root = project.in(file(".")).aggregate(scalaXml).enablePlugins(NoPublis
 
 val http4sVersion = "0.23.30"
 val scalacheckXmlVersion = "0.1.1"
-val scalaXml2Version = "2.3.0"
+val scalaXml2Version = "2.4.0"
 val munitVersion = "1.1.0"
 val munitCatsEffectVersion = "2.1.0"
 
@@ -22,7 +22,6 @@ lazy val scalaXml = project
   .settings(
     name := "http4s-scala-xml",
     description := "Provides scala-xml codecs for http4s",
-    tlMimaPreviousVersions ++= (0 to 11).map(y => s"0.23.$y").toSet,
     libraryDependencies ++= Seq(
       "org.http4s" %%% "http4s-core" % http4sVersion,
       "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
