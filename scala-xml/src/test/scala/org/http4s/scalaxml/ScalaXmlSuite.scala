@@ -36,7 +36,7 @@ import org.typelevel.scalacheck.xml.generators._
 import java.nio.charset.StandardCharsets
 import scala.xml.Elem
 
-class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with ScalaXmlSuiteVersion {
+class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite {
   def getBody(body: EntityBody[IO]): IO[String] =
     body.through(utf8.decode).foldMonoid.compile.lastOrError
 
@@ -60,11 +60,10 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite with Scal
 
   test("round trips utf-8") {
     forAllF(genXml) { (elem: Elem) =>
-      val normalized = normalize(elem).asInstanceOf[Elem]
       Request[IO]()
-        .withEntity(normalized)
+        .withEntity(elem)
         .as[Elem]
-        .assertEquals(normalized)
+        .assertEquals(elem)
     }
   }
 
