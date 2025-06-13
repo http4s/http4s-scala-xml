@@ -39,7 +39,7 @@ libraryDependencies ++= Seq(
 
 | artifact           | version | http4s-core | scala-xml | Scala 2.12 | Scala 2.13 | Scala 3 | Status |
 |:-------------------|:--------|:------------|:----------|------------|------------|---------|--------|
-| http4s-scala-xml   | 0.24.x  | 0.23.x      | 2.3.x     | ✅         | ✅         | ✅      | Stable |
+| http4s-scala-xml   | 0.24.x  | 0.23.x      | 2.4.x     | ✅         | ✅         | ✅      | Stable |
 | http4s-scala-xml   | 0.23.x  | 0.23.x      | 2.3.x     | ✅         | ✅         | ✅      | EOL    |
 | http4s-scala-xml-1 | 0.23.x  | 0.23.x      | 1.x       | ✅         | ✅         | ❌      | EOL    |
 
