@@ -15,7 +15,7 @@ val http4sVersion = "0.23.33"
 val scalacheckXmlVersion = "0.1.1"
 val scalaXml2Version = "2.4.0"
 val munitVersion = "1.2.0"
-val munitCatsEffectVersion = "2.1.0"
+val munitCatsEffectVersion = "2.2.0"
 
 lazy val scalaXml = project
   .in(file("scala-xml"))
