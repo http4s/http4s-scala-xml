@@ -6,7 +6,7 @@ ThisBuild / startYear := Some(2014)
 
 val Scala212 = "2.12.21"
 val Scala213 = "2.13.18"
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.3.7")
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.3.8")
 ThisBuild / scalaVersion := Scala213
 
 lazy val root = project.in(file(".")).aggregate(scalaXml).enablePlugins(NoPublishPlugin)
