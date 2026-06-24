@@ -93,7 +93,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite {
     assertIO(
       writeToString(html),
       """<?xml version='1.0' encoding='UTF-8'?>
-        |<html><body>Hello</body></html>""".stripMargin,
+      |<html><body>Hello</body></html>""".stripMargin,
     )
   }
 
@@ -107,7 +107,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite {
         .compile
         .string,
       """<?xml version='1.0' encoding='UTF-8'?>
-        |<hello name="Günther"/>""".stripMargin,
+      |<hello name="Günther"/>""".stripMargin,
     )
   }
 
@@ -121,7 +121,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite {
         .compile
         .string,
       """<?xml version='1.0' encoding='UTF-16'?>
-        |<hello name="Günther"/>""".stripMargin,
+      |<hello name="Günther"/>""".stripMargin,
     )
   }
 
@@ -135,7 +135,7 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite {
         .compile
         .string,
       """<?xml version='1.0' encoding='ISO-8859-1'?>
-        |<hello name="Günther"/>""".stripMargin,
+      |<hello name="Günther"/>""".stripMargin,
     )
   }
 
@@ -272,5 +272,43 @@ class ScalaXmlSuite extends CatsEffectSuite with ScalaCheckEffectSuite {
       "application/xml; charset=iso-8859-1",
       "Günther",
     )
+  }
+
+  test("default SAX parser factory UnrecognizedFeature") {
+    intercept[org.xml.sax.SAXNotRecognizedException] {
+      saxFactory.getFeature("foobar")
+    }
+  }
+
+  test("default SAX parser factory enables secure processing") {
+    assert(saxFactory.getFeature("http://javax.xml.XMLConstants/feature/secure-processing"))
+  }
+
+  test("default SAX parser factory disables doctypes entirely") {
+    assert(saxFactory.getFeature("http://apache.org/xml/features/disallow-doctype-decl"))
+  }
+
+  test("default SAX parser factory disables external generial entities") {
+    assert(!saxFactory.getFeature("http://xml.org/sax/features/external-general-entities"))
+  }
+
+  test("default SAX parser factory disables external parameter entities") {
+    assert(!saxFactory.getFeature("http://xml.org/sax/features/external-parameter-entities"))
+  }
+
+  test("default SAX parser factory ignores external DTDs") {
+    assert(!saxFactory.getFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd"))
+  }
+
+  test("default SAX parser factory does not resolve DTD URIs") {
+    assert(!saxFactory.getFeature("http://xml.org/sax/features/resolve-dtd-uris"))
+  }
+
+  test("default SAX parser factory disables XInclude processing") {
+    assert(!saxFactory.newSAXParser.isXIncludeAware)
+  }
+
+  test("default SAX parser factory creates namespace unaware SAX parsers") {
+    assert(!saxFactory.newSAXParser.isNamespaceAware)
   }
 }

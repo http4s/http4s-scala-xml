@@ -35,7 +35,7 @@ import scala.xml.SAXParseException
 import scala.xml.XML
 
 trait ElemInstances {
-  protected def saxFactory: SAXParserFactory
+  protected[scalaxml] def saxFactory: SAXParserFactory
 
   implicit def xmlEncoder[F[_]](implicit charset: Charset = `UTF-8`): EntityEncoder[F, Elem] =
     EntityEncoder.stringEncoder
