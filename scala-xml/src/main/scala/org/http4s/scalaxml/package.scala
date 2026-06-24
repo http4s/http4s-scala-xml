@@ -16,8 +16,23 @@
 
 package org.http4s
 
+import javax.xml.XMLConstants
 import javax.xml.parsers.SAXParserFactory
 
 package object scalaxml extends ElemInstances {
-  override val saxFactory = SAXParserFactory.newInstance
+  override val saxFactory = {
+    val parserFactory = SAXParserFactory.newInstance
+    parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)
+    parserFactory.setFeature(
+      "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+      false,
+    )
+    parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+    parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false)
+    parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false)
+    parserFactory.setFeature("http://xml.org/sax/features/resolve-dtd-uris", false)
+    parserFactory.setXIncludeAware(false)
+    parserFactory.setNamespaceAware(false)
+    parserFactory
+  }
 }
