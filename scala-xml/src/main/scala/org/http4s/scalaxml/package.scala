@@ -20,7 +20,7 @@ import javax.xml.XMLConstants
 import javax.xml.parsers.SAXParserFactory
 
 package object scalaxml extends ElemInstances {
-  override val saxFactory = {
+  override val saxFactory: SAXParserFactory = {
     val parserFactory = SAXParserFactory.newInstance
     parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)
     parserFactory.setFeature(
