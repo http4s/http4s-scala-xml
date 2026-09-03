@@ -13,7 +13,7 @@ lazy val root = project.in(file(".")).aggregate(scalaXml).enablePlugins(NoPublis
 val http4sVersion = "1.0.0-M46"
 val scalacheckXmlVersion = "0.1.1"
 val scalaXmlVersion = "2.4.0"
-val munitVersion = "1.3.0"
+val munitVersion = "1.3.1"
 val munitCatsEffectVersion = "2.2.0"
 
 lazy val scalaXml = project
