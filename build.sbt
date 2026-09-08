@@ -16,7 +16,7 @@ ThisBuild / githubWorkflowJavaVersions :=
 ThisBuild / githubWorkflowBuildMatrixExclusions ++= {
   for {
     scala <- (ThisBuild / githubWorkflowScalaVersions).value
-    java  <- (ThisBuild / githubWorkflowJavaVersions).value
+    java <- (ThisBuild / githubWorkflowJavaVersions).value
     if scala.startsWith("3") && java != JavaSpec.temurin("17")
   } yield MatrixExclude(Map("scala" -> scala, "java" -> java.render))
 }
