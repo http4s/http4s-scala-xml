@@ -9,6 +9,31 @@ val Scala213 = "2.13.18"
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.3.8")
 ThisBuild / scalaVersion := Scala213
 
+// Scala 3 requires Java 17 now, but Scala 2 still supports Java 8.
+// Buckle up.
+ThisBuild / githubWorkflowJavaVersions :=
+  Seq(JavaSpec.temurin("17"), JavaSpec.temurin("8"), JavaSpec.temurin("11"))
+ThisBuild / githubWorkflowBuildMatrixExclusions ++= {
+  for {
+    scala <- (ThisBuild / githubWorkflowScalaVersions).value
+    java <- (ThisBuild / githubWorkflowJavaVersions).value
+    if scala.startsWith("3") && java != JavaSpec.temurin("17")
+  } yield MatrixExclude(Map("scala" -> scala, "java" -> java.render))
+}
+ThisBuild / tlJdkRelease := None
+ThisBuild / scalacOptions ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((3, _)) => Seq("-release", "17")
+    case _ => Seq("-release", "8")
+  }
+}
+ThisBuild / javacOptions ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((3, _)) => Seq("--release", "17")
+    case _ => Seq("--release", "8")
+  }
+}
+
 lazy val root = project.in(file(".")).aggregate(scalaXml).enablePlugins(NoPublishPlugin)
 
 val http4sVersion = "0.23.37"
