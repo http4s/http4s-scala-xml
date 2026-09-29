@@ -36,7 +36,7 @@ ThisBuild / javacOptions ++= {
 
 lazy val root = project.in(file(".")).aggregate(scalaXml).enablePlugins(NoPublishPlugin)
 
-val http4sVersion = "0.23.37"
+val http4sVersion = "0.23.38"
 val scalacheckXmlVersion = "0.1.1"
 val scalaXml2Version = "2.5.0"
 val munitVersion = "1.3.1"
