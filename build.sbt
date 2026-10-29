@@ -6,7 +6,7 @@ ThisBuild / startYear := Some(2014)
 
 val Scala212 = "2.12.21"
 val Scala213 = "2.13.18"
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.3.8")
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, "3.3.9")
 ThisBuild / scalaVersion := Scala213
 
 // Scala 3 requires Java 17 now, but Scala 2 still supports Java 8.
